@@ -1,0 +1,78 @@
+/*************************************/
+/*          General styles           */
+/*************************************/
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+
+/*************************************/
+/*         Page container            */
+/*************************************/
+
+.container {
+  width: 90%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+
+/*************************************/
+/*           Main layout             */
+/*************************************/
+
+.main-layout {
+  display: grid;
+
+  /* Divide available space into thirds:
+     2 thirds for the visualizations
+     1 third for the text */
+  grid-template-columns: 2fr 1fr;
+
+  gap: 2rem;
+}
+
+
+/*************************************/
+/*      Visualization column         */
+/*************************************/
+
+.visualization-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+
+/*************************************/
+/*    Responsive viz containers      */
+/*************************************/
+
+.responsive-svg-container {
+  width: 100%;
+}
+
+
+/*************************************/
+/*      Temporary viz outline        */
+/*************************************/
+
+.viz-container {
+  min-height: 500px;
+  border: 1px solid black;
+}
+
+
+/*************************************/
+/*           Text column             */
+/*************************************/
+
+.text-column {
+  padding: 1rem;
+  border: 1px solid black;
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Showcase piece - V1</title>
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- Project introduction -->
+        <h1>Project title</h1>
+
+        <div class="intro">
+            Introductory paragraph about the project.
+        </div>
+
+
+        <!-- Main 2/3 + 1/3 area -->
+        <div class="main-layout">
+
+            <!-- Left column -->
+            <div class="visualization-column">
+
+                <div id="bubblechart"
+                     class="responsive-svg-container viz-container">
+                </div>
+
+                <div id="sankey"
+                     class="responsive-svg-container viz-container">
+                </div>
+
+            </div>
+
+
+            <!-- Right column -->
+            <div class="text-column">
+
+                <h2>What gets wasted?</h2>
+                <p>
+                    Text explaining visualization 1.
+                </p>
+
+                <h2>Why does it get wasted?</h2>
+                <p>
+                    Text explaining visualization 2.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Load scripts -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+
+	<script src="./js/constants.js"></script>
+	<script src="./js/bubblechart.js"></script>
+	<script src="./js/sankey.js"></script>
+	<script src="./js/animations.js"></script>
+	<script src="./js/main.js"></script>
+
+</body>
+</html>
