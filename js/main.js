@@ -88,7 +88,7 @@ d3.csv("./data/data_messungen.csv", d => {
     
     });
     
-    console.table(categoryPercentages); // console.table instead of console.log for better readability
+    //console.table(categoryPercentages); // console.table instead of console.log for better readability
 
     /*******************************/
     /*    3% cutoff rule    */
@@ -134,7 +134,7 @@ d3.csv("./data/data_messungen.csv", d => {
     )
     .sort((a, b) => b[1] - a[1]);
     
-    console.table(cleanedCategoryTotals);
+    // console.table(cleanedCategoryTotals);
 
 
   /*******************************/

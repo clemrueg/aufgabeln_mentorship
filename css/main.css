@@ -76,3 +76,37 @@ body {
   padding: 1rem;
   border: 1px solid black;
 }
+
+/*************************************/
+/*             Typography            */
+/*************************************/
+
+body {
+  font-family: "GT Walsheim", Arial, sans-serif;
+  font-weight: 200;
+  font-size: medium;
+  color: #142e4b;
+}
+
+
+/* Main project title */
+h1 {
+  font-family: "Lobster", cursive;
+  font-weight: normal;
+}
+
+
+/* Section headings */
+h2,
+h3 {
+  font-family: "League Gothic", sans-serif;
+  font-weight: normal;
+}
+
+
+/* D3 category labels */
+.category-label {
+  font-family: "League Gothic", sans-serif;
+  font-weight: normal;
+  fill: #142e4b;
+}

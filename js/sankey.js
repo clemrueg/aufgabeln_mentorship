@@ -83,7 +83,7 @@ const drawSankey = data => {
       
       });
       
-      console.table(fullPathFlows);
+      //console.table(fullPathFlows);
 
     // // Check that total of aggregated paths is the same as total of raw data
     // const fullPathTotal = d3.sum(
@@ -154,7 +154,7 @@ const drawSankey = data => {
     const nodes = categoryNodes
         .concat(causeNodes, reasonNodes);
   
-    console.table(nodes);
+   // console.table(nodes);
 
     /*******************************/
     /*  STEP 8:  Create Sankey links */
@@ -208,7 +208,7 @@ const drawSankey = data => {
 
     });
 
-    console.table(links);
+    // console.table(links);
 
     // // Each full path produces 2 links, so number of links should be 2x full paths
     // console.log("Number of full paths:", fullPathFlows.length);
@@ -333,6 +333,6 @@ const drawSankey = data => {
     // Add level labels
     chart
   .append
-  
+
     
 };

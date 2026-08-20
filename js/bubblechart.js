@@ -1,59 +1,61 @@
+// Steps:
+//
+// STEP 1: Aggregate measurements by food category + food item
+//
+// STEP 2: Convert the aggregated data into a hierarchy
+//         root -> category -> food item
+//
+// STEP 3: Create the D3 hierarchy with d3.hierarchy()
+//
+// STEP 4: Compute node values with root.sum()
+//
+// STEP 5: Get category nodes and food-item leaf nodes
+//
+// STEP 6: Create one shared radius scale for all food items
+//
+// STEP 7: Create a circle-pack layout for each food category
+//
+// STEP 8: Call the pack generator for each category
+//
+// STEP 9: Position the category packs next to each other horizontally
+//
+// STEP 10: Append the SVG container
+//
+// STEP 11: Create one SVG group for each category pack
+//
+// STEP 12: Draw the food-item circles
+//
+// STEP 13: Draw / hide the category parent circles
+//
+// STEP 14: Add category labels
+//
+// STEP 15: Check layout, bubble sizes and category spacing
+
+
 /*******************************/
-/*       Draw bubble chart     */
+/*      Draw bubble chart      */
 /*******************************/
 
 const drawBubbleChart = data => {
 
 
     /*******************************/
-    /* STEP 1: Chart settings      */
+    /* STEP 1: Aggregate items     */
     /*******************************/
 
-    const margin = {
-        top: 40,
-        right: 40,
-        bottom: 40,
-        left: 40
-    };
-
-    // Space between the six category packs
-    const categoryGap = 40;
-
-    // Space reserved above the packs for category labels
-    const labelSpace = 50;
-
-    // Maximum radius of the largest individual food bubble
-    // Change this later if the whole visualization is too large/small
-    const maxBubbleRadius = 55;
-
-    // Padding between food bubbles inside a category
-    const bubblePadding = 4;
-
-
-
-    /*******************************/
-    /* STEP 2: Aggregate items     */
-    /*******************************/
-
-    // Combine all measurements belonging to the same food item
-    // within the same cleaned food category.
-    //
-    // Result of flatRollup:
-    // [
-    //   category,
-    //   item,
-    //   summed quantity
-    // ]
-
+    // Combine measurements belonging to the same food item
+    // within the same cleaned food category
     const itemRollups = d3.flatRollup(
         data,
-        values => d3.sum(values, d => d.quantity),
+        values => d3.sum(values, d => d.quantity), // sum quantities per category per item
         d => d.category,
         d => d.item
     );
 
+    console.log("Item rollups:", itemRollups);
 
-    // Turn the flatRollup arrays into readable objects
+
+    // Turn the flatRollup result into objects, easier to use
     const foodItems = itemRollups.map(d => {
 
         return {
@@ -64,251 +66,243 @@ const drawBubbleChart = data => {
 
     });
 
-    console.table(foodItems);
+    //console.table(foodItems);
 
+    console.log("Largest food quantityy:", d3.max(foodItems, d => d.quantity));
+    
+    console.log( "Smallest food quantity:", d3.min(foodItems, d => d.quantity));
 
 
     /*******************************/
-    /* STEP 3: Build hierarchy     */
+    /* STEP 2: Build hierarchy data */
     /*******************************/
-
-    // Group food items according to their Lebensmittel category
+    
+    // Group the aggregated food items by category
     const itemsByCategory = d3.group(
         foodItems,
         d => d.category
     );
+    
+    console.log("Items grouped by category:", itemsByCategory);
 
-
-    // Turn the grouped data into the structure needed for d3.hierarchy()
-    //
-    // root
-    // ├── category
-    // │   ├── item
-    // │   ├── item
-    // │   └── item
-    // ├── category
-    // │   └── ...
-    // └── ...
-
+    // Create nested object needed for d3.hierarchy
     const hierarchyData = {
-
+    
         name: "root",
-
-        children: Array.from(
+    
+        children: Array.from( // turns the map (that resulted from d3.group) into an array, containing [category, items]
             itemsByCategory,
             ([category, items]) => {
-
+    
                 return {
-
+    
                     name: category,
-
-                    children: items.map(d => {
-
+    
+                    children: items.map(d => { // turns every item into a child object
+    
                         return {
                             name: d.item,
                             category: d.category,
                             quantity: d.quantity
                         };
-
+    
                     })
-
+    
                 };
-
+    
             }
         )
-
+    
     };
-
+    
     console.log("Hierarchy data:", hierarchyData);
 
-
-
     /*******************************/
-    /* STEP 4: Create D3 hierarchy */
+    /* STEP 3: Create D3 hierarchy */
     /*******************************/
-
-    const root = d3.hierarchy(hierarchyData)
-
-        // Only food-item nodes contain quantity.
-        // Parent values are calculated from their children.
-        .sum(d => d.quantity || 0)
-
-        // Largest categories / foods first
-        .sort((a, b) => b.value - a.value);
-
-
+    
+    // Turn the nested object into a D3 hierarchy
+    const root = d3.hierarchy(hierarchyData);
+    
     console.log("D3 hierarchy:", root);
 
+    /*******************************/
+    /* STEP 4: Compute node values */
+    /*******************************/
+    
+    // summing child values for category nodes
+    // we need root.sum() becasue d3.pack() uses the hierarchy's value property when calculating 
+    // the circle-pack-layout. So we make the previously calculated d.quantity available in the d3 hierarchy format
+    root.sum(d => d.quantity || 0); // if quantity exists, use it; otherwise use 0 --> becasue e.g. categories have no quantities, should be 0
+     
+    console.log("Hierarchy with values:", root);
+
+    console.log("Root total:", root.value);
+
+    /*******************************/
+    /* STEP 5: hierarchy nodes */
+    /*******************************/
+    
+    // Children of the root = food categories
+    const categoryNodes = root.children;
+    
+    // Leaf nodes = individual food items
+    const foodItemNodes = root.leaves();
+    
+    console.log("Category nodes:", categoryNodes);
+    console.log("Food item nodes:", foodItemNodes);
 
 
     /*******************************/
-    /* STEP 5: Shared radius scale */
+    /* STEP 6: Create radius scale */
     /*******************************/
-
+    
+    // Max. radius for the largest food-item bubble
+    const maxBubbleRadius = 50;
+    
+    
     // Find the largest food-item quantity
-    const maxQuantity = d3.max(
-        root.leaves(),
+    const maxFoodQuantity = d3.max(
+        foodItemNodes,
         d => d.value
     );
-
-
-    // IMPORTANT:
-    // One radius scale is shared by ALL six category packs.
-    //
-    // sqrt scale means:
-    // quantity -> circle AREA
-    //
-    // A food item with the same quantity will therefore
-    // have the same radius regardless of its category.
-
-    const radiusScale = d3.scaleSqrt()
-        .domain([0, maxQuantity])
-        .range([0, maxBubbleRadius]);
-
+    
+    console.log("Maximum food-item quantity:", maxFoodQuantity);
+    
+    
+    // Create one shared radius scale for ALL food items, even if the packs are separated
+    // Otherwise it might use the biggest value of EACH PACK to define the size relatively to that
+    const radiusScale = d3.scaleSqrt() // scaling with the sqrt to get the size as an area, instead of scaling the radius linearly
+        .domain([0, maxFoodQuantity])
+        .range([0, maxBubbleRadius]);    
 
 
     /*******************************/
-    /* STEP 6: Pack each category  */
+    /* STEP 7: Initialize pack generator   */
     /*******************************/
-
-    // Each child of the main root is one food category.
-    //
-    // We keep the overall hierarchy, but calculate a local
-    // circle pack for each category separately.
-
-    const categoryPacks = root.children.map(categoryNode => {
-
-
-        // Copy this category subtree so that its local pack
-        // can be calculated independently.
-        const categoryRoot = categoryNode.copy()
-
-            .sum(d => d.quantity || 0)
-
-            .sort((a, b) => b.value - a.value);
-
-
-        // Create the pack generator for this category.
-        //
-        // size([1, 1]) is not used to determine bubble size
-        // because we explicitly provide the bubble radius below.
-        //
-        // We will manually position the complete category pack later.
-
-        const packGenerator = d3.pack()
-            .size([1, 1])
-            .padding(bubblePadding)
-
-            // Explicit radius keeps bubble sizes comparable
-            // between all six category packs.
-            .radius(d => radiusScale(d.value));
-
-
-        // Call the generator
-        packGenerator(categoryRoot);
-
-
-        return {
-            name: categoryRoot.data.name,
-            value: categoryRoot.value,
-
-            // Store the packed hierarchy
-            root: categoryRoot,
-
-            // Radius of the entire category pack
-            radius: categoryRoot.r
-        };
-
-    });
-
-
-    console.log("Category packs:", categoryPacks);
-
-
-    // Useful check:
-    // after applying the 3% cutoff you expect six categories
-    console.log(
-        "Number of category packs:",
-        categoryPacks.length
-    );
-
+        
+    const bubblePadding = 3; // Padding between individual food item circles
+        
+        
+    // Initialize the circle-pack layout generator
+    const packLayoutGenerator = d3.pack()
+         .size([1, 1]) // minimal layout size required by pack generator
+            // actual size will grow as large as necessary to contain circles based on the radius
+         .padding(bubblePadding)
+        .radius(d => radiusScale(d.value)); // use radius previously defined to have same radius for each pack
 
 
     /*******************************/
-    /* STEP 7: Position categories */
+    /* STEP 8: Create 8 individual category packs */
     /*******************************/
+            
+    const categoryPacks = categoryNodes.map(categoryNode => { // looping through each category node, creating one packed hierarcy for each
+            
+        // Make a copy of the category subtree, so that each category can
+        // temporarily act as its own root
+        const categoryRoot = categoryNode.copy();
+            
+        // Recalculate the hierarchy values for this subtree
+        categoryRoot.sum(d => d.quantity || 0);
+            
+        // Call the pack generator
+        // D3 now adds x, y and r coordinates
+        packLayoutGenerator(categoryRoot);
+            
+            
+            return categoryRoot;
+            
+        });
+            
+        console.log("Category packs:", categoryPacks); // categoryPacks = array containing 8 objects: 8 packed hierarchies
+          
+            // console.table(
+            //     categoryPacks.map(d => {
+            
+            //         return {
+            //             category: d.data.name,
+            //             quantity: d.value,
+            //             radius: d.r,
+            //             numberOfItems: d.leaves().length
+            //         };
+            
+            //     })
+            // );
 
-    // The packs now know their internal bubble positions,
-    // but we decide where the six complete category groups
-    // should sit in the SVG.
-    //
-    // Put them next to each other from left to right.
 
+    /*******************************/
+    /* STEP 9: Position packs      */
+    /*******************************/
+            
+    // Horizontal space between category packs
+    const categoryGap = 30;
+            
+            
+    // Start at the left side of the visualization
     let currentX = 0;
-
-
+            
+            
+    // Give each category pack its horizontal position
     categoryPacks.forEach(d => {
-
-        // Position the center of this category pack
-        d.x = currentX + d.radius;
-
-        // Move to the right edge of this pack
-        // plus the gap before the next category
-        currentX += (d.radius * 2) + categoryGap;
-
+            
+        // Position the CENTER of the current category pack.
+        // currentX represents the left edge of the available space,
+        // so we add the category radius to reach its center.
+        d.layoutX = currentX + d.r; //d.x, d.y and d.r calculated by circle-pack layout
+            
+            
+        // Move currentX to the right edge of this category,
+        // then add a gap before the next category.
+        currentX += (d.r * 2) + categoryGap;
+            
     });
 
-
-    // Remove the final unnecessary gap
+    // Width occupied by all category packs
     const packsWidth = currentX - categoryGap;
-
-
-    // Find the largest category pack.
-    // All category centers will use the same y position.
+    
+    
+    // Largest category determines the vertical space needed
     const maxPackRadius = d3.max(
         categoryPacks,
-        d => d.radius
+        d => d.r
     );
 
-
-    // All six pack centers lie on this same horizontal line
-    const packCenterY = labelSpace + maxPackRadius;
-
-
-
     /*******************************/
-    /* STEP 8: SVG dimensions      */
+    /* STEP 10: Append SVG         */
     /*******************************/
-
-    // Width depends on the actual six packed categories
+    
+    // Margins around the visualization
+    const margin = {
+        top: 50,
+        right: 40,
+        bottom: 40,
+        left: 40
+    };
+    
+    
+    // Vertical position of all category-pack centers
+    const packCenterY = maxPackRadius;
+    
+    
+    // Calculate SVG dimensions based on the actual pack sizes
     const width =
         margin.left +
         packsWidth +
         margin.right;
-
-
-    // Height depends on the largest category pack
+    
     const height =
         margin.top +
-        labelSpace +
         (maxPackRadius * 2) +
         margin.bottom;
-
-
-
-    /*******************************/
-    /* STEP 9: Append SVG          */
-    /*******************************/
-
+    
+    
+    // Append SVG inside the bubblechart div
     const svg = d3.select("#bubblechart")
         .append("svg")
-        .attr(
-            "viewBox",
-            `0 0 ${width} ${height}`
-        );
-
-
-    // Apply margin convention
+        .attr("viewBox", `0 0 ${width} ${height}`);
+    
+    
+    // Append chart group and apply margin convention
     const chart = svg
         .append("g")
         .attr(
@@ -316,159 +310,75 @@ const drawBubbleChart = data => {
             `translate(${margin.left}, ${margin.top})`
         );
 
-
-
-    /********************************/
-    /* STEP 10: Category groups      */
-    /********************************/
-
-    // Create one SVG group <g> for each category pack.
-    //
-    // Each group is moved horizontally to the position
-    // calculated above.
-
+    /*******************************/
+    /* STEP 11: Category groups    */
+    /*******************************/
+        
+    // Create one SVG group for each food category
     const categoryGroups = chart
         .selectAll(".category-pack")
         .data(categoryPacks)
         .join("g")
             .attr("class", "category-pack")
             .attr(
-                "transform",
-                d => `translate(${d.x}, ${packCenterY})`
-            );
+                 "transform",
+                 d => `translate(${d.layoutX}, ${packCenterY})`
+             );
+
+/*******************************/
+/* STEP 12: Draw food bubbles  */
+/*******************************/
+
+// For each category group, draw all its food-item leaf nodes
+categoryGroups.each(function(categoryRoot) {
+
+    // Select the current category <g>
+    const group = d3.select(this);
+
+    // Get only the food-item nodes from this category
+    const foodNodes = categoryRoot.leaves();
+
+    // Draw one circle for each food item
+    group
+        .selectAll(".food-bubble")
+        .data(foodNodes)
+        .join("circle")
+            .attr("class", "food-bubble")
+
+            // Position relative to the center of the category pack
+            .attr("cx", d => d.x - categoryRoot.x)
+            .attr("cy", d => d.y - categoryRoot.y)
+
+            // Radius calculated by d3.pack()
+            .attr("r", d => d.r)
+
+            // Temporary styling
+            .attr("fill", "lightgrey")
+            .attr("stroke", "white")
+            .attr("stroke-width", 1);
+
+});         
+     
+/*******************************/
+/* STEP 14: Category labels    */
+/*******************************/
+
+// Use the position of the first category label
+// as the common horizontal line for all labels
+const labelY = categoryPacks[0].r + 25;
 
 
+// Add one label below each category pack
+categoryGroups
+    .append("text")
+        .attr("class", "category-label")
 
-    /*******************************/
-    /* STEP 11: Color scale        */
-    /*******************************/
-
-    // Category names in their current order
-    const categoryNames = categoryPacks.map(
-        d => d.name
-    );
-
-
-    // Connect each category to one of the six global colors
-    const categoryColor = d3.scaleOrdinal()
-        .domain(categoryNames)
-        .range(categoryColors);
-
-
-
-    /********************************/
-    /* STEP 12: Category boundaries  */
-    /********************************/
-
-    // Draw the category parent circle.
-    //
-    // At the moment it has an outline to make the packing
-    // structure visible while developing the visualization.
-    //
-    // Later you can make this completely invisible.
-
-    categoryGroups
-        .append("circle")
-        .attr("class", "category-boundary")
-        .attr("cx", 0)
-        .attr("cy", 0)
-        .attr("r", d => d.radius)
-
-        .attr("fill", "none")
-
-        .attr(
-            "stroke",
-            d => categoryColor(d.name)
-        )
-
-        .attr("stroke-width", 2)
-        .attr("stroke-opacity", 0.4);
-
-
-
-    /*******************************/
-    /* STEP 13: Draw food bubbles  */
-    /*******************************/
-
-    // We need to draw the leaf nodes separately
-    // inside every category group.
-
-    categoryGroups.each(function(categoryPack) {
-
-
-        // Select the current category <g>
-        const group = d3.select(this);
-
-
-        // Get only the food-item nodes
-        const foodNodes = categoryPack.root.leaves();
-
-
-        group
-            .selectAll(".food-bubble")
-            .data(foodNodes)
-            .join("circle")
-
-                .attr("class", "food-bubble")
-
-
-                // d3.pack calculated x/y relative to its own root.
-                //
-                // Subtract the category root position so that
-                // the category center becomes (0, 0).
-                .attr(
-                    "cx",
-                    d => d.x - categoryPack.root.x
-                )
-
-                .attr(
-                    "cy",
-                    d => d.y - categoryPack.root.y
-                )
-
-
-                // Radius was calculated with the shared scale
-                .attr("r", d => d.r)
-
-
-                // All foods belonging to the same category
-                // receive the same color
-                .attr(
-                    "fill",
-                    d => categoryColor(d.data.category)
-                )
-
-                .attr("fill-opacity", 0.8)
-
-                .attr("stroke", "white")
-                .attr("stroke-width", 1);
-
-    });
-
-
-
-    /*******************************/
-    /* STEP 14: Category labels    */
-    /*******************************/
-
-    categoryGroups
-        .append("text")
-
-        .text(d => d.name)
+        .text(d => d.data.name)
 
         .attr("x", 0)
 
-        // Put label above its enclosing category circle
-        .attr(
-            "y",
-            d => -d.radius - 15
-        )
-
+        // Same y position for every category label
+        .attr("y", labelY)
         .attr("text-anchor", "middle")
-
-        .style("font-size", "16px")
-        .style("font-weight", "bold");
-
-
 
 };
