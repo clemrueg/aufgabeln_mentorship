@@ -331,5 +331,8 @@ const drawSankey = data => {
         .style("font-size", "12px");
     
     // Add level labels
+    chart
+  .append
+  
     
 };
