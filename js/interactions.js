@@ -108,3 +108,76 @@ const createTooltipSankey = () => {
         .attr("dominant-baseline", "auto")
         .style("font-weight", 600);
 };
+
+const handleMouseEventsSankey = (sankeyLinks, categoryColorScale, width) => { // call width as an argument, bc in sankey.js, not global
+   
+    // Adding interaction to the links 
+    sankeyLinks
+      .on("mouseenter", function(e,d) {
+          //console.log(e,d);
+      
+          // Selecting the path to be highlighted when mouse is hovered over
+            sankeyLinks
+                .filter(link => link.pathId === d.pathId) // to highlight the full path, not only link between two nodes
+                    .attr("stroke", categoryColorScale(d.category))
+                    .attr("stroke-opacity", 1);
+                           
+            // Modifying the tool tip based on the linked nodes data
+            const tooltipText = d3.select(".tooltip-sankey text");
+            
+            tooltipText.text("");
+                                
+            tooltipText.append("tspan")
+                .attr("x", 5)
+                .attr("dy", 5)
+                .text(`Value: ${d.value}`);
+            
+            tooltipText.append("tspan")
+                .attr("x", 5)
+                .attr("dy", 20)
+                .text(`${((d.value / d.source.value) * 100).toFixed(1)}% of ${d.source.id}`);
+            
+            tooltipText.append("tspan")
+                .attr("x", 5)
+                .attr("dy", 20)
+                .text(`to target ${d.target.name}`);
+                        
+                             
+            // Translating the tooltip based on mouse position (if left side then tool tip to the right and if over the half way line then tool tip to the left)
+            d3.select(".tooltip-sankey")
+                               
+                .attr("transform", () =>{
+                    if ( e.offsetX < width/2 ) {
+                        return `translate(${e.offsetX + 60}, ${e.offsetY - 25})`;
+                    }
+                    else if (e.offsetX > width/2 || e.offsetY < 650){
+                        return  `translate(${e.offsetX - 160}, ${e.offsetY + 85})`;
+                    }
+                    else if (e.offsetX > width/2 || e.offsetY > 650){
+                        return  `translate(${e.offsetX + 160}, ${e.offsetY + 165})`;
+                    }
+                })
+
+            // Tooltip opacity set to show background and stroke colour
+            d3.select(".tooltip-sankey rect")
+                .attr("fill-opacity", 0.85)
+                .attr("stroke-opacity", 1)                  
+        })
+
+        .on("mouseleave", function(e,d) {
+            // returns the stroke to the original colour
+            sankeyLinks
+                .filter(link => link.pathId === d.pathId)
+                    .attr("stroke", "lightgrey")
+                    .attr("stroke-opacity", 0.5);
+
+            // Resets the tooltip text and sets opacaties to 0 to hide
+            d3.select(".tooltip-sankey text")
+                .text("")
+            
+            d3.select(".tooltip-sankey rect")
+                .attr("fill-opacity", 0)
+                .attr("stroke-opacity", 0)
+        })
+
+};

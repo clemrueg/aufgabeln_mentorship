@@ -246,8 +246,10 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
     
       .nodePadding(10) // padding between same-level-nodes
 
-      .nodeSort(null) // stop d3-sankey from rearranging the categories automatically, to stick to the categoryOrder 
+      .nodeSort((a, b) => d3.descending(a.value, b.value)) // stop d3-sankey from rearranging the categories automatically, to stick to the categoryOrder 
     
+      .linkSort((a,b) => d3.descending(a.value,b.value)) // order categories at node level by descending value
+
       // Define the area in which D3 can position the nodes
       .extent([ // demanded by the sankey API
         [0, 0], // top left corner
@@ -291,17 +293,17 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
         .target(d => [d.y1, d.target.x0]);
 
     // Drawing links before nodes, so that nodes appear on top of the ribbons
-    sankeyChart
+    const sankeyLinks = sankeyChart
       .append("g")
       .selectAll("path")
       .data(annotatedData.links)
       .join("path")
           .attr("d", linkGenerator)
           .attr("fill", "none")
-          .attr("stroke", darkBlue)
+          .attr("stroke", "lightgrey")
           .attr("stroke-opacity", 0.2)
           .attr("stroke-width", d => d.width); // d.width created in the sankey generator, based on d.quantity
-
+    
     // Draw the nodes
     sankeyChart
       .append("g")
@@ -315,7 +317,12 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
         .attr("width", d => d.y1 - d.y0)
         .attr("height", d => d.x1 - d.x0)
 
-        .attr("fill", darkBlue);
+    // color the nodes of the first level according to the category colors
+        .attr("fill", d => {
+          return d.level === "category"
+            ? categoryColorScale(d.name)
+            : darkBlue;
+});
 
     /*******************************/
     /* STEP 13: Update Sankey, make it look nice  */
@@ -339,79 +346,17 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
     console.log("AnnotatedData", annotatedData)
     
     // Add level labels
-    
 
-  /*******************************/
-  /* STEP 14: Add interaction  */
-  /*******************************/
 
-sankeyChart
-    .append("g")
-    .selectAll("path")
-    .data(annotatedData.links)
-    .join("path")
-        .attr("d", linkGenerator)
-        .attr("fill", "transparent")
-        .attr("stroke", "lightgrey")
-        .attr("stroke-opacity", 0.5)
-        .attr("stroke-width", d => d.width)
-        .on("mouseenter", function(e,d) {
-                        console.log(e,d);
+    /*******************************/
+    /* STEP 14: Call interactions (developed in interactions.js)  */
+    /*******************************/
+    createTooltipSankey(sankeyLinks);
+    handleMouseEventsSankey(
+      sankeyLinks, 
+      categoryColorScale,
+      width
+    ); // pass the color scale as argument to be able to highlight with the correct color
 
-                        // Selecting the path to be highlighted when mouse is hovered over
-                            d3.select(this)
-                                .attr("stroke", "orange")
-                                .attr("stroke-opacity", 1);
-                           
-                        // Modifying the tool tip based on the linked nodes data
-                            const tooltipText = d3.select(".tooltip text");
-                              tooltipText.text("");
-                                tooltipText.append("tspan")
-                                .attr("x", 5)
-                                .attr("dy", 5)
-                                .text(`Value: ${d.value}`);
-                                tooltipText.append("tspan")
-                                .attr("x", 5)
-                                .attr("dy", 20)
-                                .text(`${((d.value / d.source.value) * 100).toFixed(1)}% of ${d.source.id}`);
-                                tooltipText.append("tspan")
-                                .attr("x", 5)
-                                .attr("dy", 20)
-                                .text(`to target ${d.target.name}`);
-                             
-                        // Translating the tooltip based on mouse position (if left side then tool tip to the right and if over the half way line then tool tip to the left)
-                              d3.select(".tooltip")
-                               
-                                .attr("transform", () =>{
-                                  if ( e.offsetX < width/2 ) {
-                                    return `translate(${e.offsetX + 60}, ${e.offsetY - 25})`;
-                                  }
-                                  else if (e.offsetX > width/2 || e.offsetY < 650){
-                                    return  `translate(${e.offsetX - 160}, ${e.offsetY + 85})`;
-                                  }
-                                  else if (e.offsetX > width/2 || e.offsetY > 650){
-                                    return  `translate(${e.offsetX + 160}, ${e.offsetY + 165})`;
-                                  }
-                            })
+} 
 
-                            // Tooltip opacity set to show background and stroke colour
-                            d3.select(".tooltip rect")
-                              .attr("fill-opacity", 0.85)
-                              .attr("stroke-opacity", 1)                  
-        })
-        .on("mouseleave", function() {
-                        // returns the stroke to the original colour
-                              d3.select(this)
-                                .attr("stroke", "lightgrey")
-                                .attr("stroke-opacity", 0.5);
-
-                        // Resets the tooltip text and sets opacaties to 0 to hide
-                              d3.select(".tooltip text")
-                                  .text("")
-                            d3.select(".tooltip rect")
-                              .attr("fill-opacity", 0)
-                              .attr("stroke-opacity", 0)
-                              })
-
-    
-};
