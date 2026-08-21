@@ -158,13 +158,16 @@ d3.csv("./data/data_messungen.csv", d => {
     categoryColorScale
   );
 
-  // call VIZ 2
+  createTooltipBubble();
+  handleMouseEventsBubble(); 
+
+  // call VIZ 2 + Tooltip
   drawSankey(
     cleanedData,
     categoryOrder,
     categoryColorScale
   );
-  
+
   createTooltipSankey();
 
  });

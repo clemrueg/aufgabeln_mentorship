@@ -278,7 +278,7 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
         .attr("viewBox", `0 0 ${width} ${height}`);
     
     // Append a group that contains the actual chart and translate it by the margin convention
-    chart = svg
+    sankeyChart = svg
     .append("g")
         .attr(
         "transform",
@@ -291,23 +291,23 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
         .target(d => [d.y1, d.target.x0]);
 
     // Drawing links before nodes, so that nodes appear on top of the ribbons
-    chart
-    .append("g")
-    .selectAll("path")
-    .data(annotatedData.links)
-    .join("path")
-        .attr("d", linkGenerator)
-        .attr("fill", "none")
-        .attr("stroke", darkBlue)
-        .attr("stroke-opacity", 0.2)
-        .attr("stroke-width", d => d.width); // d.width created in the sankey generator, based on d.quantity
+    sankeyChart
+      .append("g")
+      .selectAll("path")
+      .data(annotatedData.links)
+      .join("path")
+          .attr("d", linkGenerator)
+          .attr("fill", "none")
+          .attr("stroke", darkBlue)
+          .attr("stroke-opacity", 0.2)
+          .attr("stroke-width", d => d.width); // d.width created in the sankey generator, based on d.quantity
 
     // Draw the nodes
-    chart
-    .append("g")
-    .selectAll("rect")
-    .data(annotatedData.nodes)
-    .join("rect")
+    sankeyChart
+      .append("g")
+      .selectAll("rect")
+      .data(annotatedData.nodes)
+      .join("rect")
     // Swap the Sankey x/y coordinates so the levels run from top to bottom
         .attr("x", d => d.y0)
         .attr("y", d => d.x0)
@@ -322,7 +322,7 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
     /*******************************/
 
     // Add node labels
-    chart
+    sankeyChart
       .append("g")
       .selectAll("text")
       .data(annotatedData.nodes)
@@ -345,7 +345,7 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
   /* STEP 14: Add interaction  */
   /*******************************/
 
-chart
+sankeyChart
     .append("g")
     .selectAll("path")
     .data(annotatedData.links)

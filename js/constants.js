@@ -2,7 +2,9 @@
 /*       Initialize constants         */
 /*******************************/
 
-let chart // in the constants file so that it can be appended in the interaction file and then in the sankey file
+let sankeyChart; // in the constants file so that it can be appended in the interaction file and then in the sankey file
+
+let bubbleChart;
 
 /*******************************/
 /*       Global colors         */
@@ -34,3 +36,9 @@ const categoryColors = [
   lightOrange,
   brown
 ];
+
+/*******************************/
+/*       Interaction constants       */
+/*******************************/
+const bubbleTooltipWidth = 200;
+const bubbleTooltipHeight = 100;

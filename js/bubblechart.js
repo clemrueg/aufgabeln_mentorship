@@ -30,6 +30,8 @@
 // STEP 14: Add category labels
 //
 // STEP 15: Check layout, bubble sizes and category spacing
+//
+// STEP 16 : Build tooltip
 
 
 /*******************************/
@@ -309,7 +311,7 @@ const drawBubbleChart = (data, categoryOrder, categoryColorScale) => {
     
     
     // Append chart group and apply margin convention
-    const chart = svg
+    bubbleChart = svg
         .append("g")
         .attr(
             "transform",
@@ -321,7 +323,7 @@ const drawBubbleChart = (data, categoryOrder, categoryColorScale) => {
     /*******************************/
         
     // Create one SVG group for each food category
-    const categoryGroups = chart
+    const categoryGroups = bubbleChart
         .selectAll(".category-pack")
         .data(categoryPacks)
         .join("g")
@@ -386,5 +388,10 @@ categoryGroups
         // Same y position for every category label
         .attr("y", labelY)
         .attr("text-anchor", "middle")
+
+/*******************************/
+/* STEP 16: Build tooltip    */
+/*******************************/
+
 
 };
