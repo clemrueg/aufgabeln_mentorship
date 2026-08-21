@@ -292,8 +292,8 @@ const drawSankey = data => {
     .join("path")
         .attr("d", linkGenerator)
         .attr("fill", "none")
-        .attr("stroke", "lightgrey")
-        .attr("stroke-opacity", 0.5)
+        .attr("stroke", darkBlue)
+        .attr("stroke-opacity", 0.2)
         .attr("stroke-width", d => d.width); // d.width created in the sankey generator, based on d.quantity
 
     // Draw the nodes
@@ -309,7 +309,7 @@ const drawSankey = data => {
         .attr("width", d => d.y1 - d.y0)
         .attr("height", d => d.x1 - d.x0)
 
-        .attr("fill", "grey");
+        .attr("fill", darkBlue);
 
     /*******************************/
     /* Add labels  */

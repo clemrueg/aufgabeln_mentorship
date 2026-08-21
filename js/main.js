@@ -133,6 +133,16 @@ d3.csv("./data/data_messungen.csv", d => {
       d => d.category
     )
     .sort((a, b) => b[1] - a[1]);
+
+    // Category names ordered from highest to lowest total quantity
+  const categoryOrder = cleanedCategoryTotals.map(d => d[0]);
+
+  console.log("Category order:", categoryOrder);
+
+  // shared color scale based on ranking from VIZ1
+  const categoryColorScale = d3.scaleOrdinal()
+    .domain(categoryOrder)
+    .range(categoryColors);
     
     // console.table(cleanedCategoryTotals);
 
@@ -142,9 +152,17 @@ d3.csv("./data/data_messungen.csv", d => {
   /*******************************/
 
   // call VIZ 1
-  drawBubbleChart(cleanedData);
+  drawBubbleChart(
+    cleanedData,
+    categoryOrder,
+    categoryColorScale
+  );
 
   // call VIZ 2
-  drawSankey(cleanedData);
-  
+  drawSankey(
+    cleanedData,
+    categoryOrder,
+    categoryColorScale
+  );
+
  });

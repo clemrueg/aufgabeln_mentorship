@@ -36,7 +36,7 @@
 /*      Draw bubble chart      */
 /*******************************/
 
-const drawBubbleChart = data => {
+const drawBubbleChart = (data, categoryOrder, categoryColorScale) => {
 
 
     /*******************************/
@@ -145,6 +145,12 @@ const drawBubbleChart = data => {
     
     // Children of the root = food categories
     const categoryNodes = root.children;
+
+    // Sort categories according to the order calculated in main.js
+    // highest total quantity -> lowest total quantity
+    categoryNodes.sort((a, b) => {
+        return categoryOrder.indexOf(a.data.name) - categoryOrder.indexOf(b.data.name);
+    });
     
     // Leaf nodes = individual food items
     const foodItemNodes = root.leaves();
@@ -353,7 +359,7 @@ categoryGroups.each(function(categoryRoot) {
             .attr("r", d => d.r)
 
             // Temporary styling
-            .attr("fill", "lightgrey")
+            .attr("fill", d => categoryColorScale(d.data.category))
             .attr("stroke", "white")
             .attr("stroke-width", 1);
 

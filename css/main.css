@@ -10,6 +10,17 @@ body {
   margin: 0;
 }
 
+.project-info {
+  margin-top: 6rem;
+  padding-top: 2rem;
+  border-top: 1px solid #142e4b;
+  font-size: 0.9rem;
+}
+
+.project-info p {
+  margin-bottom: 0.5rem;
+}
+
 
 /*************************************/
 /*         Page container            */
@@ -64,7 +75,7 @@ body {
 
 .viz-container {
   min-height: 500px;
-  border: 1px solid black;
+  border: 0px solid black;
 }
 
 
@@ -88,15 +99,11 @@ body {
   color: #142e4b;
 }
 
-
-/* Main project title */
 h1 {
   font-family: "Lobster", cursive;
   font-weight: normal;
 }
 
-
-/* Section headings */
 h2,
 h3 {
   font-family: "League Gothic", sans-serif;

@@ -18,46 +18,65 @@
     <div class="container">
 
         <!-- Project introduction -->
-        <h1>Project title</h1>
-
+        <h1>Aufgabeln!</h1>
+    
         <div class="intro">
-            Introductory paragraph about the project.
+            Food waste often starts small. A forgotten vegetable, a half-eaten meal, a slice of bread left behind. But what happens when all these everyday moments are added together? This project follows measured food waste in Swiss households, from what gets thrown away to the reasons behind it.       
         </div>
-
-
-        <!-- Main 2/3 + 1/3 area -->
-        <div class="main-layout">
-
-            <!-- Left column -->
-            <div class="visualization-column">
-
-                <div id="bubblechart"
-                     class="responsive-svg-container viz-container">
-                </div>
-
-                <div id="sankey"
-                     class="responsive-svg-container viz-container">
-                </div>
-
+    
+    
+        <!-- VIZ 1 -->
+        <section class="viz-section">
+            <h2>What gets wasted?</h2>
+            <div class="intro-bubble">
+                Some foods disappear into the bin more than others. Each bubble represents one food item, with its area showing the total wasted weight. Grouped by food category, the bubbles reveal which foods contribute most to the measured waste—and where surprisingly large amounts can hide.
+            </div>
+    
+            <div id="bubblechart"
+                 class="responsive-svg-container viz-container">
+            </div>
+    
+        </section>
+    
+    
+        <!-- VIZ 2 -->
+        <section class="viz-section">
+            <h2>Why does it happen?</h2>
+            
+            <div class="intro-sankey">
+                What was thrown away is only half the story. Follow the waste from food category → cause → reason to see how different everyday situations lead to disposal. The flows reveal which explanations dominate, which overlap, and how the story changes from one food category to another.           
             </div>
 
-
-            <!-- Right column -->
-            <div class="text-column">
-
-                <h2>What gets wasted?</h2>
-                <p>
-                    Text explaining visualization 1.
-                </p>
-
-                <h2>Why does it get wasted?</h2>
-                <p>
-                    Text explaining visualization 2.
-                </p>
-
+            <div id="sankey"
+                 class="responsive-svg-container viz-container">
             </div>
+    
+    
+        </section>
 
-        </div>
+        <!-- Project information -->
+<footer class="project-info">
+
+    <p>
+        Data:
+        <a href="#" target="_blank">
+            [Project / data source]
+        </a>
+    </p>
+
+    <p>
+        Visualization and development:
+        Clémence Rüegsegger, 2026
+    </p>
+
+    <p>
+        The visualizations explore patterns within the collected measurements
+        and should not be read as estimates for all Swiss households.
+    </p>
+
+</footer>
+    
+    </div>
 
     </div>
 
