@@ -19,7 +19,7 @@
 /*       Draw the Sankey       */
 /*******************************/
 
-const drawSankey = data => {
+const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 arguments to make sure we have the same visualization as VIZ1
 
     /*******************************/
     /*      Chart dimensions       */
@@ -105,7 +105,11 @@ const drawSankey = data => {
     // Get all unique values for each level from the cleaned and aggregated Sankey data; same as above with original dataset
     const sankeyCategories = [...new Set(
       fullPathFlows.map(d => d.category)
-    )];
+    )]
+      .sort((a, b) => 
+        categoryOrder.indexOf(a) - categoryOrder.indexOf(b) // sort categories to match the categoryOrder from VIZ 1
+        // cannot simply use categoryOrder[a], because a and b are category names, not numbers
+      );;
     
     const sankeyCauses = [...new Set(
       fullPathFlows.map(d => d.cause)
@@ -241,6 +245,8 @@ const drawSankey = data => {
       .nodeWidth(20) // Width of the node rectangles
     
       .nodePadding(10) // padding between same-level-nodes
+
+      .nodeSort(null) // stop d3-sankey from rearranging the categories automatically, to stick to the categoryOrder 
     
       // Define the area in which D3 can position the nodes
       .extent([ // demanded by the sankey API
