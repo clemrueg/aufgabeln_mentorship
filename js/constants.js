@@ -1,4 +1,10 @@
 /*******************************/
+/*       Initialize constants         */
+/*******************************/
+
+let chart // in the constants file so that it can be appended in the interaction file and then in the sankey file
+
+/*******************************/
 /*       Global colors         */
 /*******************************/
 

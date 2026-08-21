@@ -164,5 +164,7 @@ d3.csv("./data/data_messungen.csv", d => {
     categoryOrder,
     categoryColorScale
   );
+  
+  createTooltipSankey();
 
  });

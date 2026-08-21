@@ -1,4 +1,4 @@
-const createTooltip = () => {
+const createTooltipSankey = () => {
  
  
     const tooltipWidth = 200;

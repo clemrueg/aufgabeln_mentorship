@@ -270,9 +270,9 @@ const drawSankey = data => {
     const svg = d3.select("#sankey")
     .append("svg")
         .attr("viewBox", `0 0 ${width} ${height}`);
-
+    
     // Append a group that contains the actual chart and translate it by the margin convention
-    const chart = svg
+    chart = svg
     .append("g")
         .attr(
         "transform",
@@ -312,27 +312,100 @@ const drawSankey = data => {
         .attr("fill", darkBlue);
 
     /*******************************/
-    /* Add labels  */
+    /* STEP 13: Update Sankey, make it look nice  */
     /*******************************/
 
     // Add node labels
     chart
-    .append("g")
-    .selectAll("text")
-    .data(annotatedData.nodes)
-    .join("text")
-        .text(d => d.name)
+      .append("g")
+      .selectAll("text")
+      .data(annotatedData.nodes)
+      .join("text")
+          .text(d => d.name)
 
-        // Use same coordinates as nodes; place label in the horizontal center of the node
-        .attr("x", d => (d.y0 + d.y1) / 2)
-        .attr("y", d => d.x0 - 5) // label 5px above node
+          // Use same coordinates as nodes; place label in the horizontal center of the node
+          .attr("x", d => (d.y0 + d.y1) / 2)
+          .attr("y", d => d.x0 - 5) // label 5px above node
 
-        .attr("text-anchor", "middle")
-        .style("font-size", "12px");
+          .attr("text-anchor", "middle")
+          .style("font-size", "12px");
+    
+    console.log("AnnotatedData", annotatedData)
     
     // Add level labels
-    chart
-  .append
+    
+
+  /*******************************/
+  /* STEP 14: Add interaction  */
+  /*******************************/
+
+chart
+    .append("g")
+    .selectAll("path")
+    .data(annotatedData.links)
+    .join("path")
+        .attr("d", linkGenerator)
+        .attr("fill", "transparent")
+        .attr("stroke", "lightgrey")
+        .attr("stroke-opacity", 0.5)
+        .attr("stroke-width", d => d.width)
+        .on("mouseenter", function(e,d) {
+                        console.log(e,d);
+
+                        // Selecting the path to be highlighted when mouse is hovered over
+                            d3.select(this)
+                                .attr("stroke", "orange")
+                                .attr("stroke-opacity", 1);
+                           
+                        // Modifying the tool tip based on the linked nodes data
+                            const tooltipText = d3.select(".tooltip text");
+                              tooltipText.text("");
+                                tooltipText.append("tspan")
+                                .attr("x", 5)
+                                .attr("dy", 5)
+                                .text(`Value: ${d.value}`);
+                                tooltipText.append("tspan")
+                                .attr("x", 5)
+                                .attr("dy", 20)
+                                .text(`${((d.value / d.source.value) * 100).toFixed(1)}% of ${d.source.id}`);
+                                tooltipText.append("tspan")
+                                .attr("x", 5)
+                                .attr("dy", 20)
+                                .text(`to target ${d.target.name}`);
+                             
+                        // Translating the tooltip based on mouse position (if left side then tool tip to the right and if over the half way line then tool tip to the left)
+                              d3.select(".tooltip")
+                               
+                                .attr("transform", () =>{
+                                  if ( e.offsetX < width/2 ) {
+                                    return `translate(${e.offsetX + 60}, ${e.offsetY - 25})`;
+                                  }
+                                  else if (e.offsetX > width/2 || e.offsetY < 650){
+                                    return  `translate(${e.offsetX - 160}, ${e.offsetY + 85})`;
+                                  }
+                                  else if (e.offsetX > width/2 || e.offsetY > 650){
+                                    return  `translate(${e.offsetX + 160}, ${e.offsetY + 165})`;
+                                  }
+                            })
+
+                            // Tooltip opacity set to show background and stroke colour
+                            d3.select(".tooltip rect")
+                              .attr("fill-opacity", 0.85)
+                              .attr("stroke-opacity", 1)                  
+        })
+        .on("mouseleave", function() {
+                        // returns the stroke to the original colour
+                              d3.select(this)
+                                .attr("stroke", "lightgrey")
+                                .attr("stroke-opacity", 0.5);
+
+                        // Resets the tooltip text and sets opacaties to 0 to hide
+                              d3.select(".tooltip text")
+                                  .text("")
+                            d3.select(".tooltip rect")
+                              .attr("fill-opacity", 0)
+                              .attr("stroke-opacity", 0)
+                              })
 
     
 };
