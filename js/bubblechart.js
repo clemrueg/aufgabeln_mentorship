@@ -389,9 +389,5 @@ categoryGroups
         .attr("y", labelY)
         .attr("text-anchor", "middle")
 
-/*******************************/
-/* STEP 16: Build tooltip    */
-/*******************************/
-
 
 };

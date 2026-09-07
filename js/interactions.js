@@ -181,3 +181,69 @@ const handleMouseEventsSankey = (sankeyLinks, categoryColorScale, width) => { //
         })
 
 };
+
+//*************************//
+//      Node tooltip        //
+//*************************//
+
+//Tooltip with for nodes, showing nodes percentages at that level
+
+const createTooltipSankeyNodes = () => {
+
+    const tooltip = sankeyChart
+        .append("g")
+        .attr("class", "tooltip-sankey-node")
+        .attr("fill", "lightblue")
+        .style("opacity", 0);
+
+    tooltip
+        .append("rect")
+        .attr("width", 160)
+        .attr("height", 60)
+        .attr("rx", 4)
+        .attr("ry", 4);
+
+    tooltip
+        .append("text")
+        .attr("x", 80)
+        .attr("y", 30)
+        .attr("text-anchor", "middle")
+        .attr("stroke","black");
+};
+
+const handleMouseEventsSankeyNodes = sankeyNodes => {
+
+    sankeyNodes
+        .on("mouseenter", function(e, d) {
+
+            const nodesAtSameLevel = sankeyNodes
+                .data()
+                .filter(node => node.level === d.level);
+
+            const levelTotal = d3.sum(
+                nodesAtSameLevel,
+                node => node.value
+            );
+
+            const percentage = (d.value / levelTotal * 100).toFixed(1);
+
+            d3.select(".tooltip-sankey-node text")
+                .text(`${percentage}%`);
+
+            const mousePosition = d3.pointer(e, sankeyChart.node());
+
+            d3.select(".tooltip-sankey-node")
+                .attr(
+                    "transform",
+                    `translate(${mousePosition[0] + 10}, ${mousePosition[1] - 70})`
+                )
+                .style("opacity", 1);
+        })
+
+        .on("mouseleave", function() {
+
+            d3.select(".tooltip-sankey-node")
+                .style("opacity", 0);
+
+        });
+};

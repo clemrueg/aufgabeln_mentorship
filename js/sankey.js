@@ -26,7 +26,7 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
     /*******************************/
 
     const width = 1000;
-    const height =1500;
+    const height =800;
 
     const margin = {
     top: 40,
@@ -305,11 +305,12 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
           .attr("stroke-width", d => d.width); // d.width created in the sankey generator, based on d.quantity
     
     // Draw the nodes
-    sankeyChart
+    const sankeyNodes = sankeyChart //save the selection so that we can use it for interactions
       .append("g")
       .selectAll("rect")
       .data(annotatedData.nodes)
       .join("rect")
+
     // Swap the Sankey x/y coordinates so the levels run from top to bottom
         .attr("x", d => d.y0)
         .attr("y", d => d.x0)
@@ -323,6 +324,8 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
             ? categoryColorScale(d.name)
             : darkBlue;
 });
+
+
 
     /*******************************/
     /* STEP 13: Update Sankey, make it look nice  */
@@ -352,11 +355,14 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
     /* STEP 14: Call interactions (developed in interactions.js)  */
     /*******************************/
     createTooltipSankey(sankeyLinks);
+
     handleMouseEventsSankey(
       sankeyLinks, 
       categoryColorScale,
       width
     ); // pass the color scale as argument to be able to highlight with the correct color
 
+  createTooltipSankeyNodes();
+  handleMouseEventsSankeyNodes(sankeyNodes);    
 } 
 
