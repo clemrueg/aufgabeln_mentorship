@@ -90,3 +90,55 @@ h3 {
   fill: white;
   opacity: 0.5;
 }
+
+
+/******************/
+/*    Text highlights etc. */
+/******************/
+
+.story-block {
+    max-width: 850px;
+    margin-bottom: 2rem;
+}
+
+.story-block p {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.kpi-card {
+    padding: 1rem 1.2rem;
+    border: 1px solid #142e4b;
+    border-radius: 8px;
+    background-color: #f8fafc;
+}
+
+.kpi-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.35rem;
+    color: #142e4b;
+}
+
+.kpi-label {
+    font-size: 0.95rem;
+    line-height: 1.3;
+}
+
+.story-highlight {
+    font-weight: 700;
+}
+
+.category-highlight {
+    padding: 0 0.15rem;
+}

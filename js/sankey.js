@@ -332,21 +332,31 @@ const drawSankey = (data, categoryOrder, categoryColorScale) => { // pass the 3 
     /*******************************/
 
     // Add node labels
+    // Only label the 5 biggest nodes of each level
+    const labelledNodes = d3.groups(
+        annotatedData.nodes,
+        d => d.level
+    )
+    .flatMap(([level, nodes]) => {
+
+        return nodes
+            .sort((a, b) => d3.descending(a.value, b.value))
+            .slice(0, 5);
+
+    });
+
+
+    // Add labels
     sankeyChart
-      .append("g")
-      .selectAll("text")
-      .data(annotatedData.nodes)
-      .join("text")
-          .text(d => d.name)
-
-          // Use same coordinates as nodes; place label in the horizontal center of the node
-          .attr("x", d => (d.y0 + d.y1) / 2)
-          .attr("y", d => d.x0 - 5) // label 5px above node
-
-          .attr("text-anchor", "middle")
-          .style("font-size", "12px");
-    
-    console.log("AnnotatedData", annotatedData)
+        .append("g")
+        .selectAll("text")
+        .data(labelledNodes)
+        .join("text")
+            .text(d => d.name)
+            .attr("x", d => (d.y0 + d.y1) / 2)
+            .attr("y", d => d.x0 - 5)
+            .attr("text-anchor", "middle")
+            .style("font-size", "10px");
     
     // Add level labels
 

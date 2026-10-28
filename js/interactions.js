@@ -94,19 +94,17 @@ const createTooltipSankey = () => {
         .attr("rx", 4)
         .attr("ry", 4)
         .attr("fill", "lightblue")
-        .attr("stroke", "black")
         .attr("fill-opacity", 0)
         .attr("stroke-opacity", 0);
    
     tooltip
         .append("text")
-        .attr("font-size", 14)
+        .attr("font-size", 12)
         .text("")
         .attr("x", 0)
         .attr("y", 20)
         .attr("text-anchor", "start")
-        .attr("dominant-baseline", "auto")
-        .style("font-weight", 600);
+        .attr("dominant-baseline", "auto");
 };
 
 const handleMouseEventsSankey = (sankeyLinks, categoryColorScale, width) => { // call width as an argument, bc in sankey.js, not global
@@ -123,24 +121,37 @@ const handleMouseEventsSankey = (sankeyLinks, categoryColorScale, width) => { //
                     .attr("stroke-opacity", 1);
                            
             // Modifying the tool tip based on the linked nodes data
-            const tooltipText = d3.select(".tooltip-sankey text");
-            
-            tooltipText.text("");
-                                
-            tooltipText.append("tspan")
-                .attr("x", 5)
-                .attr("dy", 5)
-                .text(`Value: ${d.value}`);
-            
-            tooltipText.append("tspan")
-                .attr("x", 5)
-                .attr("dy", 20)
-                .text(`${((d.value / d.source.value) * 100).toFixed(1)}% of ${d.source.id}`);
-            
-            tooltipText.append("tspan")
-                .attr("x", 5)
-                .attr("dy", 20)
-                .text(`to target ${d.target.name}`);
+           const tooltipText = d3.select(".tooltip-sankey text");
+
+                tooltipText.text("");
+
+                // Amount in bold
+                tooltipText
+                    .append("tspan")
+                    .attr("x", 5)
+                    .attr("dy", 5)
+                    .style("font-weight", 700)
+                    .text(`${d.value.toFixed(0)} g`);
+
+                // Continue same line
+                tooltipText
+                    .append("tspan")
+                    .style("font-weight", 400)
+                    .text(` of ${d.category} wasted`);
+
+                // New line
+                tooltipText
+                    .append("tspan")
+                    .attr("x", 5)
+                    .attr("dy", 20)
+                    .text("following the path");
+
+                // New line
+                tooltipText
+                    .append("tspan")
+                    .attr("x", 5)
+                    .attr("dy", 20)
+                    .text(`${d.cause} – ${d.reason}`);
                         
                              
             // Translating the tooltip based on mouse position (if left side then tool tip to the right and if over the half way line then tool tip to the left)
@@ -193,22 +204,23 @@ const createTooltipSankeyNodes = () => {
     const tooltip = sankeyChart
         .append("g")
         .attr("class", "tooltip-sankey-node")
-        .attr("fill", "lightblue")
+        .attr("fill", "white")
         .style("opacity", 0);
 
     tooltip
         .append("rect")
-        .attr("width", 160)
-        .attr("height", 60)
+        .attr("width", 200)
+        .attr("height", 40)
         .attr("rx", 4)
         .attr("ry", 4);
 
     tooltip
         .append("text")
-        .attr("x", 80)
-        .attr("y", 30)
+        .attr("x", 100)
+        .attr("y", 20)
         .attr("text-anchor", "middle")
-        .attr("stroke","black");
+        .attr("fill","black")
+        .style("font-size", "12px");
 };
 
 const handleMouseEventsSankeyNodes = sankeyNodes => {
@@ -228,7 +240,7 @@ const handleMouseEventsSankeyNodes = sankeyNodes => {
             const percentage = (d.value / levelTotal * 100).toFixed(1);
 
             d3.select(".tooltip-sankey-node text")
-                .text(`${percentage}%`);
+                .text(`${d.name}: ${percentage}%`);
 
             const mousePosition = d3.pointer(e, sankeyChart.node());
 

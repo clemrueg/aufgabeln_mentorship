@@ -146,6 +146,64 @@ d3.csv("./data/data_messungen.csv", d => {
     
     // console.table(cleanedCategoryTotals);
 
+  /*******************************/
+/* Story values                */
+/*******************************/
+
+// Total waste in kg
+const totalWasteKg = (totalQuantity / 1000).toFixed(1);
+
+// Total wasted quantity per item
+const itemTotals = d3.rollups(
+    cleanedData,
+    values => d3.sum(values, d => d.quantity),
+    d => d.item
+).sort((a, b) => b[1] - a[1]);
+
+const topItemName = itemTotals[0][0];
+const topItemKg = (itemTotals[0][1] / 1000).toFixed(1);
+
+// Two biggest categories
+const topCategory1 = cleanedCategoryTotals[0][0];
+const topCategory1Pct = ((cleanedCategoryTotals[0][1] / totalQuantity) * 100).toFixed(1);
+
+const topCategory2 = cleanedCategoryTotals[1][0];
+const topCategory2Pct = ((cleanedCategoryTotals[1][1] / totalQuantity) * 100).toFixed(1);
+
+const topTwoCategoriesPct = (
+    ((cleanedCategoryTotals[0][1] + cleanedCategoryTotals[1][1]) / totalQuantity) * 100
+).toFixed(1);
+
+
+/*******************************/
+/* Fill story text             */
+/*******************************/
+
+  d3.select("#kpi-total-waste")
+      .text(totalWasteKg);
+
+  d3.select("#top-item-name")
+      .text(topItemName);
+
+  d3.select("#top-item-value")
+      .text(topItemKg);
+
+  d3.select("#top-cat-1-name")
+      .text(topCategory1)
+      .style("color", categoryColorScale(topCategory1));
+
+  d3.select("#top-cat-1-pct")
+      .text(`${topCategory1Pct}%`);
+
+  d3.select("#top-cat-2-name")
+      .text(topCategory2)
+      .style("color", categoryColorScale(topCategory2));
+
+  d3.select("#top-cat-2-pct")
+      .text(`${topCategory2Pct}%`);
+
+  d3.select("#top-two-cats-pct")
+      .text(`${topTwoCategoriesPct}%`);
 
   /*******************************/
   /*    Call the visualizations   */

@@ -20,16 +20,55 @@
         <!-- Project introduction -->
         <h1>Aufgabeln!</h1>
     
-        <div class="intro">
-            Food waste often starts small. A forgotten vegetable, a half-eaten meal, a slice of bread left behind. But what happens when all these everyday moments are added together? This project follows measured food waste in Swiss households, from what gets thrown away to the reasons behind it.       
+<div class="intro story-block">
+    <p>
+        <strong>Aufgabeln!</strong> is a citizen-science project by catta in which households use an app to document what food they throw away, how much they waste, and why. Over a 14-day measurement period, the project turns everyday observations into new knowledge about food waste at home.
+    </p>
+
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <span class="kpi-value" id="kpi-households">499</span>
+            <span class="kpi-label">participating households</span>
         </div>
+
+        <div class="kpi-card">
+            <span class="kpi-value" id="kpi-total-waste"></span>
+            <span class="kpi-label">kg of food wasted during the measurement period</span>
+        </div>
+
+        <div class="kpi-card">
+            <span class="kpi-value">14</span>
+            <span class="kpi-label">days of measurement</span>
+        </div>
+    </div>
+</div>
     
     
         <!-- VIZ 1 -->
         <section class="viz-section">
-            <h2>What gets wasted?</h2>
-            <div class="intro-bubble">
-                Some foods disappear into the bin more than others. Each bubble represents one food item, with its area showing the total wasted weight. Grouped by food category, the bubbles reveal which foods contribute most to the measured waste—and where surprisingly large amounts can hide.
+            
+            <div class="story-block">
+                <h2>What gets wasted?</h2>
+
+                <p>
+                    Food waste does not start with big dramatic moments. It often begins with small everyday leftovers: one forgotten vegetable, one unfinished dish, one product that stayed too long in the fridge. But across hundreds of households, these small moments add up.
+                </p>
+
+                <p>
+                    One food item stands out most clearly:
+                    <span class="story-highlight" id="top-item-name"></span>,
+                    with <strong id="top-item-value"></strong> kg thrown away during the measurement period.
+                </p>
+
+                <p>
+                    Looking at the bigger picture, the largest share of waste comes from
+                    <span class="story-highlight category-highlight" id="top-cat-1-name"></span>,
+                    which represents <strong id="top-cat-1-pct"></strong> of the total.
+                    It is followed by
+                    <span class="story-highlight category-highlight" id="top-cat-2-name"></span>,
+                    which represents <strong id="top-cat-2-pct"></strong>.
+                    Together, these two categories account for <strong id="top-two-cats-pct"></strong> of all recorded food waste.
+                </p>
             </div>
     
             <div id="bubblechart"
@@ -41,10 +80,21 @@
     
         <!-- VIZ 2 -->
         <section class="viz-section">
-            <h2>Why does it happen?</h2>
             
-            <div class="intro-sankey">
-                What was thrown away is only half the story. Follow the waste from food category → cause → reason to see how different everyday situations lead to disposal. The flows reveal which explanations dominate, which overlap, and how the story changes from one food category to another.           
+            <div class="story-block">
+                <h2>Why does it happen?</h2>
+
+                <p>
+                    The Sankey diagram shows that there is no single explanation for food waste. Instead, wasted food flows through many different causes and many personal reasons.
+                </p>
+
+                <p>
+                    That is what makes household food waste both complicated and hopeful: it is not usually caused by one big mistake, but by many small habits and situations that build up over time.
+                </p>
+
+                <p>
+                    In other words, reducing food waste does not require perfection. It starts with attention: noticing one’s own routines, understanding where waste happens, and changing the small behaviours that lead to it.
+                </p>
             </div>
 
             <div id="sankey"
